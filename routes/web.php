@@ -21,16 +21,15 @@ Route::controller(PetitionController::class)->group(function () {
     Route::get('petitions/index', 'index')->name('petitions.index');
     Route::get('petitions/{id}', 'show')->name('petitions.show');
     Route::get('mypetitions', 'listMine')->name('petitions.mine')->middleware('auth');
-    Route::get('petition/add', 'create')->name('petitions.edit-add');
-    Route::post('petition', 'store')->name('petitions.store');
+    Route::get('petition/add', 'create')->name('petitions.edit-add')->middleware('auth');
+    Route::post('petition', 'store')->name('petitions.store')->middleware('auth');
     Route::post('petitions/sign/{id}', 'sign')->name('petitions.sign')->middleware('auth');
     Route::get('petitionsSigned', 'petitionsSigned')->name('petitions.petitionsSigned');
 
 
-    Route::delete('petitions/{id}', 'delete')->name('petitions.delete');
-    Route::put('petitions/{id}', 'update')->name('petitions.update');
-
-    Route::get('petitions/edit/{id}', 'update')->name('petitions.edit');
+//    Route::delete('petitions/{id}', 'delete')->name('petitions.delete');
+//    Route::put('petitions/{id}', 'update')->name('petitions.update');
+//    Route::get('petitions/edit/{id}', 'update')->name('petitions.edit');
 });
 
 

@@ -207,7 +207,7 @@
                     </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <a href="https://www.change.org/p/me-han-echado-de-clase-por-llevar-hiyab-libertad-religiosa-ya-en-instituto-ies-sagasta" class="text-decoration-none text-dark" >
+                <a class="text-decoration-none text-dark" >
                     <div class="card feature-card h-100">
                         <div class=" p-3">
                             <img src="{{asset('assets/imagenes/peticion3.jpg')}}" class="img- fluid card-img-top imagen-reducida" >
@@ -220,7 +220,7 @@
                     </div></a>
             </div>
             <div class="col-md-6 col-lg-3">
-                <a href="{{route('petitions.show', 1)}}" class="text-decoration-none text-dark">
+                <a class="text-decoration-none text-dark">
                     <div class="card feature-card h-100">
                         <div class="p-3">
                             <img src="{{asset('assets/imagenes/peticion4.jpg')}}" class="img- fluid card-img-top imagen-reducida" >
