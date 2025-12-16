@@ -8,6 +8,7 @@ use App\Models\File;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PetitionController extends Controller
 {
@@ -41,13 +42,13 @@ class PetitionController extends Controller
            'title' => 'required|max:255',
            'description' => 'required',
            'destinatary' => 'required',
-            'category' => 'required',
+            'category_id' => 'required',
             'file' => 'required'
         ]);
 
         $input = $request->all();
         try {
-            $category = Category::findOrFail($input['category']);
+            $category = Category::findOrFail($input['category_id']);
             $user = Auth::user();
             $petition = new Petition($input);
             $petition->category()->associate($category);
@@ -77,19 +78,11 @@ class PetitionController extends Controller
         $fileModel = new File;
         $fileModel->petition_id = $petition_id;
         if ($req->file('file')) {
-            //return $req->file('file');
+
 
             $filename = $fileName = time() . '_' . $file->getClientOriginalName();
-            //      Storage::put($filename, file_get_contents($req->file('file')->getRealPath()));
             $file->move('petitions', $filename);
 
-            //  Storage::put($filename, file_get_contents($request->file('file')->getRealPath()));
-            //   $file->move('storage/', $name);
-
-
-            //$filePath = $req->file('file')->storeAs('/peticiones', $fileName, 'local');
-            //    $filePath = $req->file('file')->storeAs('/peticiones', $fileName, 'local');
-            // return $filePath;
             $fileModel->name = $filename;
             $fileModel->file_path = $filename;
             $res = $fileModel->save();
@@ -128,4 +121,69 @@ class PetitionController extends Controller
         $petitions = $user->signedPetition;
         return view('petitions.index', compact('petitions'));
     }
+
+    public function edit($id)
+    {
+        $petition = Petition::findOrFail($id);
+        $this->authorize('update', $petition);
+        $categories = Category::all();
+        return view('petitions.edit-add', compact('petition', 'categories'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $petition = Petition::findOrFail($id);
+
+        $this->authorize('update', $petition);
+
+        $petition->update([
+            'title'       => $request->input('title'),
+            'description' => $request->input('description'),
+            'destinatary' => $request->input('destinatary'),
+            'category_id' => $request->input('category_id'),
+        ]);
+
+        // imagenes
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('petitions'), $filename);
+
+            $fileModel = $petition->files()->first();
+            if ($fileModel) {
+                $fileModel->file_path = $filename;
+                $fileModel->save();
+            } else {
+                $newFile = new File();
+                $newFile->petition_id = $petition->id;
+                $newFile->file_path   = $filename;
+                $newFile->save();
+            }
+        }
+
+        return redirect()->route('petitions.mine')
+            ->with('success', 'Petición actualizada correctamente.');
+    }
+
+    public function destroy($id)
+    {
+        $petition = Petition::findOrFail($id);
+
+        $this->authorize('delete', $petition);
+
+        if ($petition->signeds > 0) {
+            return redirect()->back()->with('error', 'No puedes borrar una petición que ya tiene firmas.');
+        }
+
+        foreach($petition->files as $file) {
+            $ruta = public_path('petitions/' . $file->file_path);
+            if(file_exists($ruta)) unlink($ruta);
+            $file->delete();
+        }
+
+        $petition->delete();
+
+        return redirect()->back()->with('success', 'Petición eliminada.');
+    }
+
 }

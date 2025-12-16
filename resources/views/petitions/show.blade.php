@@ -1,6 +1,5 @@
 @extends('layouts.public')
 @section('content')
-    {{-- ZONA DE MENSAJES (Copiar esto) --}}
     <div class="container mt-4">
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -16,11 +15,45 @@
             </div>
         @endif
     </div>
-    {{-- FIN ZONA DE MENSAJES --}}
     <div class="container mt-4">
         <h1 class="tituloPrincipal my-3 mb-5" style="font-weight: 700;">{{$petition->title}}</h1>
-        <div class="row g-4">
+        @auth
+             @if(Auth::id() == $petition->user_id)
+            <div class="mb-5 p-3 rounded shadow-sm border" style="background-color: #fdfdfe; border-left: 5px solid #ffc107 !important;">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                    <div class="mb-2 mb-md-0">
+                        <strong>👋 Hola, {{ Auth::user()->name }}</strong>.
+                        <span class="text-muted small">Eres el creador de esta petición.</span>
+                    </div>
 
+                    <div class="d-flex gap-2">
+                        {{-- editar --}}
+                            <a href="{{ route('petitions.edit', $petition->id) }}" class="btn btn-outline-dark btn-sm">
+                                <i class="bi bi-pencil"></i> Editar Petición
+                            </a>
+
+                            {{-- Bborrar  --}}
+                            @if($petition->signeds == 0)
+                                <form action="{{ route('petitions.destroy', $petition->id) }}" method="POST"
+                                      onsubmit="return confirm('¿Estás seguro de que quieres borrar tu petición permanentemente?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-trash"></i> Borrar
+                                    </button>
+                                </form>
+                            @else
+                                {{-- Botón desactivado si tiene firmas --}}
+                                <button class="btn btn-outline-secondary btn-sm" disabled title="No puedes borrarla porque ya tiene apoyos">
+                                    <i class="bi bi-trash"></i> Borrar (Tiene firmas)
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+              @endif
+        @endauth
+        <div class="row g-4">
             <div class="col-md-4 order-md-2 px-4">
                 <div class="sticky-lg-top" style="top: 20px;">
                     <div class="card shadow-sm border-0 form-card-con-fondo">
@@ -32,10 +65,8 @@
                                 <div class="text-muted">Firmas verificadas</div>
                             </div>
 
-                            {{-- LÓGICA DE FIRMA --}}
                             @auth
-                                {{-- CASO 1: USUARIO LOGUEADO --}}
-
+                                {{-- usuarios logueados --}}
                                 <div class="mb-3 text-center">
                                     <p class="text-muted small mb-1">Firmando como:</p>
                                     <h5 class="fw-bold">{{ Auth::user()->name }}</h5>
@@ -43,7 +74,6 @@
                                 </div>
 
                                 @if($petition->userSigners->contains(Auth::user()->id))
-                                    {{-- YA FIRMADO --}}
                                     <div class="alert alert-success text-center">
                                         <h4 class="fw-bold">¡Firmado! ✓</h4>
                                         <p class="small mb-0">Ya has apoyado esta causa.</p>
@@ -53,11 +83,9 @@
                                     </button>
 
                                 @else
-                                    {{-- NO FIRMADO: Botón para firmar --}}
+                                    {{-- si no esta firmado --}}
                                     <form action="{{ route('petitions.sign', $petition->id) }}" method="POST">
                                         @csrf
-
-                                        {{-- Opción visual (no funcional en BD aun, pero decorativa) --}}
                                         <div class="form-check mb-3">
                                             <input class="form-check-input" type="checkbox" id="mostrarPublico" checked>
                                             <label class="form-check-label small" for="mostrarPublico">
@@ -72,7 +100,7 @@
                                 @endif
 
                             @else
-                                {{-- CASO 2: USUARIO INVITADO --}}
+                                {{-- usuarios invitados --}}
                                 <h4 class="fw-bold mb-3">Firma esta petición</h4>
                                 <p class="small">Necesitas iniciar sesión para poder firmar y apoyar esta causa.</p>
 

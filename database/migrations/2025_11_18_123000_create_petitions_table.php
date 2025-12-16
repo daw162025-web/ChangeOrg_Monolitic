@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('description');
             $table->text('destinatary');
             $table->integer('signeds');
-            $table->enum('status', ['acepted', 'pending']);
+            $table->enum('status', ['accepted', 'pending']);
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('category_id')->constrained('categories');
             // $table->string('image', 255, ); No se necesita

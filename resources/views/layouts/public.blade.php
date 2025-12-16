@@ -15,7 +15,6 @@
 <header>
 <nav class="navbar shadow-sm navbar-expand-lg">
     <div class="container px-3">
-        {{-- Logo --}}
         <a href="{{ route('home') }}" class="">
             <img src="{{ asset('assets/imagenes/Change.org_logo.svg.png') }}" style="width: 100px;" class="navbar-brand navbar-brand-custom">
         </a>
@@ -27,7 +26,6 @@
                 Inicia una petición
             </a>
             <?php } ?>
-
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -63,14 +61,14 @@
 
                 <?php if(Auth::check()){ ?>
 
-                {{-- 1. Botón "Inicia petición" solo logueados --}}
+                {{-- Botón "Inicia petición" solo logueados --}}
                 <li class="nav-item d-none d-lg-block me-3">
                     <a href="{{ route('petitions.edit-add') }}" class="btn btn-petition">
                         Inicia una petición
                     </a>
                 </li>
 
-                {{-- 2. Menú de Usuario solo logueados --}}
+                {{-- Menú de Usuario solo logueados --}}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                         <img class="rounded-circle me-2" src="{{ asset('/assets/imagenes/avatar.svg') }}" alt="Profile" style="width: 35px; height: 35px; object-fit: cover;">
@@ -87,6 +85,13 @@
                             Mi Perfil
                         </a>
 
+                        @if(Auth::user()->role_id == 2)
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-danger fw-bold" href="{{ route('admin.home') }}">
+                                <i class="bi bi-speedometer2 me-2"></i> Panel Admin
+                            </a>
+                        @endif
+
                         <a class="dropdown-item text-danger" href="{{ route('logout') }}"
                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             Cerrar Sesión
@@ -98,7 +103,7 @@
                     </div>
                 </li>
 
-                {{-- 3. Botones Invitado solo no logueados --}}
+                {{-- Botones Invitado solo no logueados --}}
                 <?php } else { ?>
 
                 <li class="nav-item">
