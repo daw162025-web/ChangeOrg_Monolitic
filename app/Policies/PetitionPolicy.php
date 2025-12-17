@@ -13,7 +13,6 @@ class PetitionPolicy
         if($user->role_id == 2){
             return true;
         }
-        return false;
     }
 
     /**
