@@ -143,20 +143,24 @@ class PetitionController extends Controller
             'category_id' => $request->input('category_id'),
         ]);
 
-        // imagenes
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('petitions'), $filename);
 
             $fileModel = $petition->files()->first();
+
             if ($fileModel) {
+                // CASO 1: Ya existía foto, actualizamos
                 $fileModel->file_path = $filename;
+                $fileModel->name      = $filename;
                 $fileModel->save();
             } else {
+                // CASO 2: No tenía foto, creamos una nueva
                 $newFile = new File();
                 $newFile->petition_id = $petition->id;
                 $newFile->file_path   = $filename;
+                $newFile->name        = $filename;
                 $newFile->save();
             }
         }
