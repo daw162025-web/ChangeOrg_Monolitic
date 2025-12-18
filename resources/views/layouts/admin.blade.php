@@ -84,8 +84,8 @@
             <div class="d-flex align-items-center">
                 <img src="{{ asset('assets/imagenes/avatar.svg') }}" class="avatar-circle border border-2 border-white me-2">
                 <div>
-                    <div class="fw-bold">admin</div>
-                    <small class="text-white-50"> Online</small>
+                    <div class="fw-bold">{{ Auth::user()->name }}</div>
+                    <small class="text-white-50"> Administrador </small>
                 </div>
             </div>
         </div>
